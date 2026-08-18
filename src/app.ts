@@ -22,10 +22,10 @@ import routes from "./routes"
 
 dotenv.config()
 
-export const blockedIps = fs
-  .readFileSync(path.resolve("resources/blocked_ips.txt"), "utf8")
-  .split("\n")
-  .filter(Boolean)
+const blockedIpsFile = path.resolve("resources/blocked_ips.txt")
+export const blockedIps = fs.existsSync(blockedIpsFile)
+  ? fs.readFileSync(blockedIpsFile, "utf8").split("\n").filter(Boolean)
+  : []
 
 export const accounts = fs
   .readFileSync(path.resolve(`resources/accounts.txt`), "utf-8")
@@ -122,9 +122,13 @@ async function init() {
   // Add custom routes
   app.use(routes)
 
-  app.listen(3000, "localhost", () => {
+  const port = Number(process.env.PORT) || 3000
+  const host = process.env.HOST || "localhost"
+
+  app.listen(port, host, () => {
     console.log("\n", ascii(pkg.name, 80), "\n")
     console.log(`Version: ${pkg.version}`)
+    console.log(`Listening on ${host}:${port}`)
     console.log("Available Accounts: ", accounts.length)
     console.log("Blocked IPs: ", blockedIps.length, "\n")
   })

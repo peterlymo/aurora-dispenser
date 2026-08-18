@@ -1,0 +1,27 @@
+.git
+.gitignore
+.idea
+.vscode
+node_modules
+dist
+logs
+coverage
+temp
+tmp
+*.log
+*.zip
+.env
+.env.local
+npm-debug.log
+README.md
+LICENSE
+LICENSES
+REUSE.toml
+Dockerfile
+.dockerignore
+docker-compose.yml
+.github
+
+# Secrets — never bake these into the image, mount them at runtime
+resources/accounts.txt
+resources/blocked_ips.txt

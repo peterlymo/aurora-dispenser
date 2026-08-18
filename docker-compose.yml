@@ -1,0 +1,18 @@
+#
+# SPDX-FileCopyrightText: 2024-2025 Aurora OSS
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+services:
+  dispenser:
+    image: ghcr.io/peterlymo/aurora-dispenser:latest
+    container_name: aurora-dispenser
+    restart: unless-stopped
+    # Bound to localhost — your own reverse proxy on the host routes /api here
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./accounts.txt:/app/resources/accounts.txt:ro
+      # Optional — omit if you don't maintain a blocklist
+      # - ./blocked_ips.txt:/app/resources/blocked_ips.txt:ro
+      - ./logs:/app/dist/logs
