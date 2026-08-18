@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-FROM node:20-alpine AS build
+# Build natively on the CI host — all deps are pure JS, so the compiled
+# output and node_modules are platform-independent.
+FROM --platform=$BUILDPLATFORM node:20-alpine AS build
 WORKDIR /app
 COPY package.json ./
 RUN npm install
