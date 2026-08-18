@@ -40,6 +40,57 @@ npm start dist/src.app.js
 pm2 start dist/src/app.js --name my-dispenser
 ```
 
+## Docker
+
+Prebuilt multi-arch images (amd64/arm64) are published to GitHub Container Registry: `ghcr.io/peterlymo/aurora-dispenser`
+
+Secrets are **not** baked into the image — mount `accounts.txt` (required) and `blocked_ips.txt` (optional) at runtime.
+
+### Run with docker
+
+```bash
+# If the package is private, log in first with a PAT that has read:packages
+docker login ghcr.io -u <github-username>
+
+docker run -d --name aurora-dispenser --restart unless-stopped \
+  -p 127.0.0.1:3000:3000 \
+  -v ./accounts.txt:/app/resources/accounts.txt:ro \
+  ghcr.io/peterlymo/aurora-dispenser:latest
+```
+
+### Run with docker compose
+
+Place `accounts.txt` next to the bundled `docker-compose.yml` and run:
+
+```bash
+docker compose up -d
+```
+
+The service binds to `127.0.0.1:3000` on the host — put your own reverse proxy (nginx, Caddy, etc.) in front of it to expose `/api`.
+
+### Environment variables
+
+| Variable | Default   | Description                                  |
+| -------- | --------- | -------------------------------------------- |
+| `HOST`   | `0.0.0.0` (in Docker) | Address to bind. Defaults to `localhost` outside Docker. |
+| `PORT`   | `3000`    | Port to listen on.                            |
+
+### Volumes
+
+| Path in container                | Purpose                          |
+| -------------------------------- | -------------------------------- |
+| `/app/resources/accounts.txt`    | Google accounts (required)       |
+| `/app/resources/blocked_ips.txt` | Blocked IPs, one per line (optional) |
+| `/app/dist/logs`                 | Access/blocked logs (optional)   |
+
+### Build locally
+
+```bash
+docker build -t aurora-dispenser .
+```
+
+Images are also built and pushed automatically by GitHub Actions on every push to `main` (see `.github/workflows/docker.yml`).
+
 ## Usage
 
 Aurora Dispenser provided you following APIs:
